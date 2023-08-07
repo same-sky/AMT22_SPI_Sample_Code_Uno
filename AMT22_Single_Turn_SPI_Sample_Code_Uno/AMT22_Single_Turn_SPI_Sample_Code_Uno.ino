@@ -62,7 +62,6 @@
 
 /* SPI commands */
 #define AMT22_NOP       0x00
-#define AMT22_RESET     0x60
 #define AMT22_ZERO      0x70
 #define AMT22_TURNS     0xA0
 
@@ -184,31 +183,6 @@ void setZeroSPI(uint8_t encoder)
 
   //send the second byte of the command
   SPI.transfer(AMT22_ZERO);
-  delayMicroseconds(3);
-  
-  //set CS to high
-  digitalWrite(encoder, HIGH);
-
-  delay(250); //250 millisecond delay to allow the encoder to reset
-}
-
-/*
- * The AMT22 bus allows for extended commands. The first byte is 0x00 like a normal position transfer, but the
- * second byte is the command.
- * This function takes the pin number of the desired device as an input
- */
-void resetAMT22(uint8_t encoder)
-{
-  //set CS to low
-  digitalWrite(encoder, LOW);
-  delayMicroseconds(3);
-
-  //send the first byte of the command
-  SPI.transfer(AMT22_NOP);
-  delayMicroseconds(3);
-
-  //send the second byte of the command
-  SPI.transfer(AMT22_RESET);
   delayMicroseconds(3);
   
   //set CS to high
