@@ -68,23 +68,15 @@
 /* We will use this define macro so we can write code once compatible with 12 or 14 bit encoders */
 #define RESOLUTION      12
 
-/* SPI pins */
-#define SPI_MOSI        11
-#define SPI_MISO        12
-#define SPI_SCLK        13
-
 //create an array containing CS pin numbers for all connected encoders
 uint8_t cs_pins[] = {2}; //only one encoder connected, using pin 2 on arduino for CS
 //uint8_t cs_pins[] = {2, 3}; //two encoders connected, using pins 2 & 3 on arduino for CS
 
 void setup()
 {
-  //Set the modes for the SPI IO
-  pinMode(SPI_SCLK, OUTPUT);
-  pinMode(SPI_MOSI, OUTPUT);
-  pinMode(SPI_MISO, INPUT);
   for(int encoder = 0; encoder < sizeof(cs_pins); ++encoder)
   {
+    //Set the modes for the SPI CS
     pinMode(cs_pins[encoder], OUTPUT);
     
     //Set the CS line high which is the default inactive state
@@ -108,16 +100,18 @@ void setup()
   SPI.begin();
 
   //if you want to set the zero position before beginning uncomment the following function call
-  //setZeroSPI(ENC_0);
-  //setZeroSPI(ENC_1);
+  //setZeroSPI(2);
+  //setZeroSPI(3);
 }
 
 void loop()
 {
   for(int encoder = 0; encoder < sizeof(cs_pins); ++encoder)
   {
+    uint8_t cs_pin = cs_pins[encoder];
+
     //set the CS signal to low
-    digitalWrite(cs_pins[encoder], LOW);
+    digitalWrite(cs_pin, LOW);
     delayMicroseconds(3);
 
     //read the two bytes for position from the encoder, starting with the high byte
@@ -135,7 +129,7 @@ void loop()
     delayMicroseconds(3);
 
     //set the CS signal to high
-    digitalWrite(cs_pins[encoder], HIGH);
+    digitalWrite(cs_pin, HIGH);
 
     if (verifyChecksumSPI(encoderPosition)) //position was good, print to serial stream
     {
@@ -190,29 +184,4 @@ bool verifyChecksumSPI(uint16_t message)
     checksum ^= (message >> i) & 0x3;
   }
   return checksum == (message >> 14);
-}
-
-/*
- * The AMT22 bus allows for extended commands. The first byte is 0x00 like a normal position transfer, but the
- * second byte is the command.
- * This function takes the pin number of the desired device as an input
- */
-void setZeroSPI(uint8_t encoder)
-{
-  //set CS to low
-  digitalWrite(encoder, LOW);
-  delayMicroseconds(3);
-
-  //send the first byte of the command
-  SPI.transfer(AMT22_NOP);
-  delayMicroseconds(3);
-
-  //send the second byte of the command
-  SPI.transfer(AMT22_ZERO);
-  delayMicroseconds(3);
-  
-  //set CS to high
-  digitalWrite(encoder, HIGH);
-
-  delay(250); //250 millisecond delay to allow the encoder to reset
 }
