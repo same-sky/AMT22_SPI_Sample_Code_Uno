@@ -142,7 +142,7 @@ void loop()
   }
 
   //For the purpose of this demo we don't need the position returned that quickly so let's wait a half second between reads
-  //delay() is in milliseconds0
+  //delay() is in milliseconds
   delay(500);
 }
 

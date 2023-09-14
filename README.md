@@ -1,6 +1,7 @@
 # AMT22 Arduino SPI Sample Code
 
 ## Table of Contents
+
 - [Hardware](#hardware)
 - [Software Required](#software)
 - [AMT22 Encoders](#amt22-encoders)
@@ -28,7 +29,7 @@
 ## Software
 
 - [Arduino IDE](https://www.arduino.cc/en/Main/Software)
-- [AMT22 Arduino Sample Code](https://github.com/cui-dtarry/AMT22_SPI_Sample_Code_Uno)
+- [AMT22 Arduino Sample Code](https://github.com/cuidevices/AMT22_SPI_Sample_Code_Uno)
 - [AMT Viewpoint](https://www.cuidevices.com/amt-viewpoint) *optional, for updating firmware*
 
 ## AMT22 Encoders
@@ -198,7 +199,7 @@ if (verifyChecksumSPI(encoderPosition)) //position was good
   Serial.print(encoderPosition, DEC); //print the position in decimal format
   Serial.write('\n');
 }
-else //position is bad, let the user know how many times we tried
+else //position is bad
 {
   Serial.print("Encoder position error.\n");
 }
@@ -241,7 +242,7 @@ void setZeroSPI(uint8_t cs_pin)
 
 Some AMT22 variants support a multi-turn counter. Instead of reading just the position, as above, we can read both the position and the turns count in a single sequence.
 
-If the position is bad, let the user know there was an error, and how many times we tried. If the position is good, simply report the position in the decimal format.
+If the position is bad, let the user know there was an error. If the position is good, simply report the position in the decimal format.
 
 ```c
 uint8_t cs_pin = 2;
