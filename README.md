@@ -142,7 +142,7 @@ The AMT22 expects two bytes of 0x00 to be sent and it returns data immediately w
 
 It does not matter if the encoder has a resolution of 12-bits or 14-bits, it will always respond with two full bytes totaling 16 bits. The upper two bits are check-bits that allow us to confirm the data’s integrity. If the encoder is a 12-bit version, the bottom two bits will both be 0. For this data to be useful it must be shifted right 2 bits (or divided by 4).
 
-We want to call the  `SPI.transfer()` function, sending the `AMT22_NOP` command. We will leave CS low. The high byte comes first, so in a single line of code we will call the function, shift it left 8 bits to get that first byte (8 bits) into the top half of the uint16_t variable, and assign it to `currentPosition`. We need to put a small delay to meet the AMT22 timing requirements, but then we can send the follow-up command. Again doing this in a single line, we are calling the  `SPI.transfer()` command, sending it `AMT22_NOP`, OR'ing the value with the currentPosition variable, and then telling it to release the CS line; this combines the two bytes received from the encoder in a single uint16_t variable.
+We want to call the  `SPI.transfer()` function, sending the `AMT22_NOP` command. We will leave CS low. The high byte comes first, so in a single line of code we will call the function, shift it left 8 bits to get that first byte (8 bits) into the top half of the uint16_t variable, and assign it to `encoderPosition`. We need to put a small delay to meet the AMT22 timing requirements, but then we can send the follow-up command. Again doing this in a single line, we are calling the  `SPI.transfer()` command, sending it `AMT22_NOP`, OR'ing the value with the encoderPosition variable, and then telling it to release the CS line; this combines the two bytes received from the encoder in a single uint16_t variable.
 
 ```c
 uint8_t cs_pin = 2;
@@ -186,9 +186,9 @@ bool verifyChecksumSPI(uint16_t message)
 
 ### Data Formatting
 
-If the check-bits are correct, then we want to update the `currentPosition` variable, stripping out the upper two bits. We AND our `currentPosition` variable with 0x3FFF (0b0011111111111111) to make sure we retain all 14 lower bits.
+If the check-bits are correct, then we want to update the `encoderPosition` variable, stripping out the upper two bits. We AND our `encoderPosition` variable with 0x3FFF (0b0011111111111111) to make sure we retain all 14 lower bits.
 
-We also need to check the handle whether the encoder resolution is 12-bit or 14-bit. If the resolution is 12-bits, then simply shift `currentPosition` 2 bits to the right.
+We also need to check the handle whether the encoder resolution is 12-bit or 14-bit. If the resolution is 12-bits, then simply shift `encoderPosition` 2 bits to the right.
 
 ```c
 if (verifyChecksumSPI(encoderPosition)) //position was good
